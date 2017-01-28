@@ -4,13 +4,12 @@ var statuses = ["Start Studying","Stop Studying?"];
 var timer;
 var time = 0;
 chrome.storage.sync.get(["extension_data"], function(items){
-	
-	
-	
 	chrome.storage.sync.get(["extension_data"], function(items){
 	var initData = {
 		status: 0,
-		time: 0
+		time: 0,
+        workTimeline: [1,1,1,1],
+        isBlocked: false
 	};
 	if(JSON.stringify(items) == JSON.stringify({})){
 		chrome.storage.sync.set({'extension_data': initData});
@@ -40,7 +39,7 @@ chrome.storage.sync.get(["extension_data"], function(items){
 				});
 				timer = setInterval(function(){
 					var now = new Date().getTime();
-					setTimer(now-time);
+					setTimer(now-time,data.workTimeline);
 				},1000);
 			} else{
 				$("#start-stop").unbind("click");
@@ -51,24 +50,50 @@ chrome.storage.sync.get(["extension_data"], function(items){
 			$("#start-stop").html(statuses[data.status]);
 			
 			
-			var newData = data;
-			newData.time = time;
-			chrome.storage.sync.set({'extension_data': newData});
+			updateStorage({time:time});
 			
 	});
 	if(data.time != 0){
 		time = data.time;
 		timer = setInterval(function(){
 			var now = new Date().getTime();
-			setTimer(now-time);
+			setTimer(now-time,data.workTimeline);
 		},500);
 	} else{
 		timer = 0;
 	}
-	function setTimer(time){
+	function setTimer(time,timeline){
 		var sec = Math.round(time/1000);
 		var min = Math.floor(sec/60);
 		var hour = Math.floor(min/60);
-		$("#timer").html(hour+"h "+min+"min "+sec+"s");
+        var mins = 0;
+        for(var i=0;i<timeline.length*20;i++){
+            if(min<mins){
+                var stat = i%timeline.length;
+                break;
+            } else{
+                mins += timeline[i%timeline.length];
+            }
+        }
+        if(stat%2==1){
+            $("#modus").html("Arbeitszeit!");
+            $("#timer").css("color","red");
+            updateStorage({isBlocked:true});
+        } else{
+            $("#modus").html("Pause!");
+            updateStorage({isBlocked:false});
+            $("#timer").css("color","green");
+        }
+		$("#timer").html(Math.floor((mins-min)/60)+"h "+(mins-min-1)%60+"min "+(59-sec%60)+"s");
 	}
 });
+function updateStorage(obj){
+    chrome.storage.sync.get(["extension_data"], function(items){
+        var data = items.extension_data;
+        Object.keys(obj).forEach(function (key) {
+           data[key] = obj[key]; 
+        });
+        chrome.storage.sync.set({'extension_data': data});
+    });
+    
+}
