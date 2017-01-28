@@ -1,0 +1,29 @@
+
+body{
+	background-image: linear-gradient(90deg,#76b852,#8DC26F);
+	background-repeat: no-repeat;
+	background-size: cover;
+}
+
+.citation-cont{
+	color: #ecf0f1;
+	margin: 0 auto;
+	margin-top: 300px;
+}
+
+#citation{
+	text-align: center;
+}
+
+#citator{
+	font-style: italic;
+}
+
+.info-text{
+	color: #ecf0f1;
+	text-align: center;
+}
+
+.settings-icon-quit{
+	color: #ecf0f1;
+}
