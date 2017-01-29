@@ -50,7 +50,7 @@ chrome.storage.sync.get(["extension_data"], function(items){
 			$("#start-stop").html(statuses[data.status]);
 			
 			
-			updateStorage({time:time});
+			updateStorage({time:time, status: data.status});
 			
 	});
 	if(data.time != 0){
