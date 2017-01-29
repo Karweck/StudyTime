@@ -8,8 +8,10 @@ chrome.storage.sync.get(["extension_data"], function(items){
 	var initData = {
 		status: 0,
 		time: 0,
-        workTimeline: [1,1,1,1],
-        isBlocked: false
+        workTimeline: [25,5,25,15],
+        isBlocked: false,
+        blacklist: ["minecraft","Spielaffe","1001Spiele","web.whatsapp","Facebook","Twitter","Amazon","Amazon","Otto","Instagram","Netflix","Netflix","Sport1","Apple","9gag","Wdr","Gamestar","Skype","Samsung","Prosieben","Pearl","Jetztspielen","Sat1","Nike","Pc-magazin","Parship","Youtube","Conrad"],
+        whitelist: []
 	};
 	if(JSON.stringify(items) == JSON.stringify({})){
 		chrome.storage.sync.set({'extension_data': initData});
