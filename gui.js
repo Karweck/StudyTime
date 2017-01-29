@@ -48,8 +48,8 @@ chrome.storage.sync.get(["extension_data"], function(items){
 			$("#start-stop").css("background-color", colors[data.status]);
 			$("#start-stop").html(statuses[data.status]);
 			
-			
 			updateStorage({time:time,status:data.status});
+
 			
 	});
 	if(data.time != 0 && data.status == 0){
