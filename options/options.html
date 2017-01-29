@@ -9,29 +9,33 @@
 <body>
 
     <div class="menu">
-            <div class="" id="settings">Einstellungen</div>
-            <div class="" id="filter">Filtereinstellungen</div>
-            <div class="" id="help">Hilfe</div>
+            <div class="" id="settings"><i class="fa fa-cogs settings-icon-quit" aria-hidden="true" id=""></i></div>
+            <div class="" id="filter"><i class="fa fa-list-alt settings-icon-quit" aria-hidden="true" id=""></i></div>
+            <div class="" id="help"><i class="fa fa-info-circle" aria-hidden="true"></i></div>
         </div>
     <div id="tabs">
         <div id ="settings-tab" class="tab">
-
+		
+		<h2 class="heading">Settings</h2>
+		
+		<div class="timer-options">
         <div class="radio">
-        <label><input type="radio" name="optradio">Option 1</label>
+        <label><input type="radio" name="optradio">Pomodoro Timer</label>
         </div>
         <div class="radio">
-        <label><input type="radio" name="optradio">Option 2</label>
+        <label><input type="radio" name="optradio">Power Hour</label>
         </div>
         <div class="radio disabled">
-        <label><input type="radio" name="optradio" disabled>Option 3</label>
+        <label><input type="radio" name="optradio" disabled>Custom Timer</label>
         </div>
-	
+		</div>
+
   </div>
         <div id ="filter-tab" class="tab">
-  Blacklist
+  <h2 class="heading">Blacklist</h2>
   </div>
         <div id ="help-tab" class="tab">
-  Help
+  <h2 class="heading">Help/Faq</h2>
   </div>
     </div>
   <script src="options.js"></script>
