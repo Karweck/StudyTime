@@ -54,7 +54,7 @@ function setTimer(time,timeline){
 		$(".time > #digit4").html(zeropad(59-sec%60,2).substr(1,1));
         $(".time > #digit3").html(zeropad(59-sec%60,2).substr(0,1));
         $(".time > #digit2").html(zeropad((mins-min-1)%60,2).substr(1,1));
-        $(".time > #digit1").html(zeropad((mins-min-1)%60,2).substr(01,1));
+        $(".time > #digit1").html(zeropad((mins-min-1)%60,2).substr(0,1));
 	}
 $(".settings-icon-quit").click(function(){
         var win = window.open("../options/options.html#settings", '_blank');
