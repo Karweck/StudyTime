@@ -17,7 +17,7 @@ if(location.hash != ""){
 chrome.storage.sync.get(["extension_data"], function(items){
     var data = items.extension_data;
     for(var i=0;i<data.blacklist.length;i++){
-        $(".blacklist-box").append("<div>"+data.blacklist[i]+"</div>");
+        $(".blacklist-box").append("<div class='col-xs-4'>"+data.blacklist[i]+"<i style='float:right' class='fa fa-times' aria-hidden='true'></i></div>");
     }
     
 });

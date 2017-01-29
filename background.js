@@ -24,7 +24,7 @@ setInterval(function(){
         });  
     }
 });
-},3000);
+},500);
 
 function updateStorage(obj){
     chrome.storage.sync.get(["extension_data"], function(items){

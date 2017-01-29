@@ -38,7 +38,7 @@ body{
 }
 
 .time{
-	margin-left: 5%;
+	text-align: center;
 }
 .digit {
 	text-align: center;
@@ -48,6 +48,8 @@ body{
   height: 180px;
   line-height: 1;
   font-family: "Aldrich";
+    width: 126px;
+
 }
 
 .info-text{

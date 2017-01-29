@@ -103,4 +103,13 @@ body{
 .blacklist-box > div{
     margin: 5px;
     margin-left: 68px;
+    padding: 5px;
+    width: 120px;
+    border: 1px solid white;
 }
+.blacklist-box > div > .fa{
+    float: right;
+    line-height: 20px !important;
+    font-size: 20px !important;
+}
+    
