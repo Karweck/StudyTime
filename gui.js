@@ -22,6 +22,18 @@ chrome.storage.sync.get(["extension_data"], function(items){
 	$("#start-stop").html(statuses[data.status]);
 	$("#start-stop").css("background-color", colors[data.status]);
 	//alert(colors[data.status]);
+    $(".settings-icon").click(function(){
+        var win = window.open("options/options.html#settings", '_blank');
+        win.focus();
+    });
+    $(".help").click(function(){
+        var win = window.open("options/options.html#help", '_blank');
+        win.focus();
+    });
+    $(".addSite").click(function(){
+        var win = window.open("options/options.html#filter", '_blank');
+        win.focus();
+    });
 	$("#start-stop").click(function(){
 		
 			

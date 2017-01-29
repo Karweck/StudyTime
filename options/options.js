@@ -3,4 +3,7 @@ $(".menu > div").click(function(){
     $(".tab").hide();
     $("#"+id+"-tab").show();
 });
-$("#settings-tab").show();
+if(location.hash != ""){
+    $(".tab").hide();
+    $("#"+location.hash.replace("#","")+"-tab").show();
+}
