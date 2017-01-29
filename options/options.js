@@ -14,3 +14,10 @@ if(location.hash != ""){
 	$("#settings-tab").show();
 	$("#settings").addClass("active");
 }
+chrome.storage.sync.get(["extension_data"], function(items){
+    var data = items.extension_data;
+    for(var i=0;i<data.blacklist.length;i++){
+        $(".blacklist-box").append("<div>"+data.blacklist[i]+"</div>");
+    }
+    
+});
