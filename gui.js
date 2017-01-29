@@ -19,14 +19,15 @@ chrome.storage.sync.get(["extension_data"], function(items){
 	//alert(JSON.stringify(items));
 	var data = items.extension_data;
 	
-	$("#start-stop").html(status[data.status]);
+	$("#start-stop").html(statuses[data.status]);
 	$("#start-stop").css("background-color", colors[data.status]);
 	//alert(colors[data.status]);
 	$("#start-stop").click(function(){
 		
-			data.status = (data.status+1)%2;
 			
-			if(data.status == 1){
+			
+			if(data.status == 0){
+                data.status = 1;
 				//show timer
 				if(data.time == 0){
 					time = new Date().getTime();
@@ -41,8 +42,6 @@ chrome.storage.sync.get(["extension_data"], function(items){
 					var now = new Date().getTime();
 					setTimer(now-time,data.workTimeline);
 				},1000);
-			} else{
-				$("#start-stop").unbind("click");
 			}
 			
 			
@@ -50,10 +49,10 @@ chrome.storage.sync.get(["extension_data"], function(items){
 			$("#start-stop").html(statuses[data.status]);
 			
 			
-			updateStorage({time:time});
+			updateStorage({time:time,status:data.status});
 			
 	});
-	if(data.time != 0){
+	if(data.time != 0 && data.status == 0){
 		time = data.time;
 		timer = setInterval(function(){
 			var now = new Date().getTime();

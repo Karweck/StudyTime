@@ -7,3 +7,17 @@ var Citations =
 var index = Math.floor(Math.random()*4);
 
 $("#citation").html(Citations[index]);
+
+$("#stop-quit").click(function(){
+    updateStorage({status:0,time:0,isBlocked:false});
+});
+function updateStorage(obj){
+    chrome.storage.sync.get(["extension_data"], function(items){
+        var data = items.extension_data;
+        Object.keys(obj).forEach(function (key) {
+           data[key] = obj[key]; 
+        });
+        chrome.storage.sync.set({'extension_data': data});
+    });
+  
+}
