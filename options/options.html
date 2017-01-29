@@ -8,29 +8,32 @@
 
 <body>
 
-  <div>
-  </div>
-  <div id ="settings-tab" class="tab">
-  
-	<div class="radio">
-	<label><input type="radio" name="optradio">Option 1</label>
-	</div>
-	<div class="radio">
-	<label><input type="radio" name="optradio">Option 2</label>
-	</div>
-	<div class="radio disabled">
-	<label><input type="radio" name="optradio" disabled>Option 3</label>
-	</div>
+    <div class="menu">
+            <div class="" id="settings">Einstellungen</div>
+            <div class="" id="filter">Filtereinstellungen</div>
+            <div class="" id="help">Hilfe</div>
+        </div>
+    <div id="tabs">
+        <div id ="settings-tab" class="tab">
+
+        <div class="radio">
+        <label><input type="radio" name="optradio">Option 1</label>
+        </div>
+        <div class="radio">
+        <label><input type="radio" name="optradio">Option 2</label>
+        </div>
+        <div class="radio disabled">
+        <label><input type="radio" name="optradio" disabled>Option 3</label>
+        </div>
 	
   </div>
-  
-  <div id ="blacklist-tab" class="tab">
+        <div id ="filter-tab" class="tab">
   Blacklist
   </div>
-  
-  <div id ="help-tab" class="tab">
+        <div id ="help-tab" class="tab">
   Help
   </div>
-  
+    </div>
+  <script src="options.js"></script>
 </body>
 </html>
