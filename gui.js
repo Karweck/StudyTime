@@ -42,7 +42,10 @@ chrome.storage.sync.get(["extension_data"], function(items){
 					var now = new Date().getTime();
 					setTimer(now-time,data.workTimeline);
 				},1000);
-			}
+			} else{
+                var win = window.open("quit/quit.html", '_blank');
+				win.focus();
+            }
 			
 			
 			$("#start-stop").css("background-color", colors[data.status]);
@@ -52,7 +55,8 @@ chrome.storage.sync.get(["extension_data"], function(items){
 
 			
 	});
-	if(data.time != 0 && data.status == 0){
+    
+	if(data.time != 0 && data.status == 1){
 		time = data.time;
 		timer = setInterval(function(){
 			var now = new Date().getTime();

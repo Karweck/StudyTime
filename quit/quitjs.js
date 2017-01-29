@@ -10,6 +10,9 @@ $("#citation").html(Citations[index]);
 
 $("#stop-quit").click(function(){
     updateStorage({status:0,time:0,isBlocked:false});
+    chrome.tabs.query({'active': true, 'lastFocusedWindow': true}, function (tabs) {
+        chrome.tabs.update(tabs[0].id, {url: "http://google.de"});
+    });
 });
 function updateStorage(obj){
     chrome.storage.sync.get(["extension_data"], function(items){
