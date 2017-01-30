@@ -1,9 +1,5 @@
 <!doctype html>
-<!--
- This page is shown when the extension button is clicked, because the
- "browser_action" field in manifest.json contains the "default_popup" key with
- value "popup.html".
- -->
+
 <html>
   <head>
 	<link rel="stylesheet" href="font-awesome/css/font-awesome.min.css">
@@ -17,16 +13,15 @@
   <body>
 	<div class="heading">
 	  <img class="logo" src="logo.png">
-	  <i class="fa fa-times close-icon" aria-hidden="true" id="close"></i>
+	  <i class="fa fa-times" aria-hidden="true" id="close"></i>
 	</div>
-	<hr class="line">
-	<div style="clear: both;"></div>
+	<hr>
 	<div id="modus">-</div>
 	<div id="timer">0h 0min 0s</div>
 	<div id="start-stop" class="start btn">Start Studying</div>
-	<div><a href="options/options.html#filter" target='_blank' class="addSite">Add this Site</a></div>
-	<a href="options/options.html#help" target='_blank' class="help">Help/FAQ</a>
-	<a href="options/options.html#settings" target='_blank' class="settings-link"><i class="fa fa-cogs settings-icon" aria-hidden="true" id="settings"></i></a>
+	<div class="addSite-container"><a href="options/options.html#filter" target='_blank' class="addSite"><i class="fa fa-plus" aria-hidden="true"></i>    Add this Site</a></div>
+	<a href="options/options.html#help" target='_blank' class="help"><i class="fa fa-info-circle" aria-hidden="true"></i></a>
+	<a href="options/options.html#settings" target='_blank' class="settings-icon"><i class="fa fa-cogs" aria-hidden="true" id="settings"></i></a>
 	
 	<script src="gui.js"></script>
   </body>
