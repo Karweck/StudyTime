@@ -104,7 +104,7 @@ function setTimer(data){
             mins += data.workTimeline[i%data.workTimeline.length];
         }
     }
-    var hours = "00";
+    var hours = zeropad(Math.floor((mins-min)/60),2);
     var minutes = zeropad(Math.floor((mins-min-1)%60),2);
     var seconds = zeropad(Math.floor((59-sec%60)),2);
     return {h:hours,m:minutes,s:seconds};
