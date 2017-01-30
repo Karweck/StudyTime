@@ -12,31 +12,21 @@
 	<script src="bootstrap/js/bootstrap.min.js"></script>
 	<script src="jquery.js"></script>
     <title>Studytime</title>
-
-
-    <!--
-      - JavaScript and HTML must be in separate files: see our Content Security
-      - Policy documentation[1] for details and explanation.
-      -
-      - [1]: https://developer.chrome.com/extensions/contentSecurityPolicy
-     -->
-    <script src="popup.js"></script>
+    
   </head>
   <body>
-    <div id="status" hidden>Status</div>  
 	<div class="heading">
 	  <img class="logo" src="logo.png">
 	  <i class="fa fa-times close-icon" aria-hidden="true" id="close"></i>
 	</div>
 	<hr class="line">
 	<div style="clear: both;"></div>
-	<div id="modus">STATUS</div>
-	<div id="timer">TIMER</div>
-	<div id="start-stop" class="start btn">Start Learning</div>
-	<div class="addSite"><a href="#">Add this Site</div>
-	<div class="help"><a href="#">Help/FAQ</a></div>
-	<a href="#"><i class="fa fa-cogs settings-icon" aria-hidden="true" id="settings"></i></a>
-	
+	<div id="modus">-</div>
+	<div id="timer">0h 0min 0s</div>
+	<div id="start-stop" class="start btn">Start Studying</div>
+	<div><a href="options/options.html#filter" target='_blank' class="addSite">Add this Site</a></div>
+	<a href="options/options.html#help" target='_blank' class="help">Help/FAQ</a>
+	<a href="options/options.html#settings" target='_blank' class="settings-link"><i class="fa fa-cogs settings-icon" aria-hidden="true" id="settings"></i></a>
 	
 	<script src="gui.js"></script>
   </body>

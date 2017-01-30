@@ -1,73 +1,63 @@
 
+var urlCheckFrequency = 1000; //ms
 var colors = ["#92b745","#D9000F"];
 var statuses = ["Start Studying","Stop Studying?"];
 var timer;
 var time = 0;
+
+var initData = {
+	status: 0,
+	time: 0,
+    workTimeline: [25,5,25,15],
+    isBlocked: false,
+    blacklist: ["minecraft","Spielaffe","1001Spiele","web.whatsapp","Facebook","Twitter","Amazon","Instagram","Netflix","Sport1","Apple","9gag","Wdr","Gamestar","Skype","Samsung","Prosieben","Pearl","Jetztspielen","Sat1","Nike","Pc-magazin","Parship","Youtube","Conrad"],
+    whitelist: []
+};
+	
+	
 chrome.storage.sync.get(["extension_data"], function(items){
-	chrome.storage.sync.get(["extension_data"], function(items){
-	var initData = {
-		status: 0,
-		time: 0,
-        workTimeline: [25,5,25,15],
-        isBlocked: false,
-        blacklist: ["minecraft","Spielaffe","1001Spiele","web.whatsapp","Facebook","Twitter","Amazon","Amazon","Otto","Instagram","Netflix","Netflix","Sport1","Apple","9gag","Wdr","Gamestar","Skype","Samsung","Prosieben","Pearl","Jetztspielen","Sat1","Nike","Pc-magazin","Parship","Youtube","Conrad"],
-        whitelist: []
-	};
+
 	if(JSON.stringify(items) == JSON.stringify({})){
 		chrome.storage.sync.set({'extension_data': initData});
 	}
-});
 
-	//alert(JSON.stringify(items));
 	var data = items.extension_data;
 	
 	$("#start-stop").html(statuses[data.status]);
 	$("#start-stop").css("background-color", colors[data.status]);
-	//alert(colors[data.status]);
-    $(".settings-icon").click(function(){
-        var win = window.open("options/options.html#settings", '_blank');
-        win.focus();
-    });
-    $(".help").click(function(){
-        var win = window.open("options/options.html#help", '_blank');
-        win.focus();
-    });
-    $(".addSite").click(function(){
-        var win = window.open("options/options.html#filter", '_blank');
-        win.focus();
-    });
+
+	
 	$("#start-stop").click(function(){
 		
 			
 			
-			if(data.status == 0){
-                data.status = 1;
-				//show timer
-				if(data.time == 0){
-					time = new Date().getTime();
-				} else{
-					time = data.time;
-				}
-				$("#start-stop").click(function(){
-					var win = window.open("quit/quit.html", '_blank');
-					win.focus();
-				});
-				timer = setInterval(function(){
-					var now = new Date().getTime();
-					setTimer(now-time,data.workTimeline);
-				},1000);
+		if(data.status == 0){
+            data.status = 1;
+			//show timer
+			if(data.time == 0){
+				time = new Date().getTime();
 			} else{
-                var win = window.open("quit/quit.html", '_blank');
+				time = data.time;
+			}
+			$("#start-stop").click(function(){
+				var win = window.open("quit/quit.html", '_blank');
 				win.focus();
-            }
+			});
+			timer = setInterval(function(){
+				var now = new Date().getTime();
+			    setTimer(now-time,data.workTimeline);
+			},urlCheckFrequency);
+		} else{
+            var win = window.open("quit/quit.html", '_blank');
+			win.focus();
+        }
 			
 			
-			$("#start-stop").css("background-color", colors[data.status]);
-			$("#start-stop").html(statuses[data.status]);
+		$("#start-stop").css("background-color", colors[data.status]);
+		$("#start-stop").html(statuses[data.status]);
 			
-			updateStorage({time:time,status:data.status});
+		updateStorage({time:time,status:data.status});
 
-			
 	});
     
 	if(data.time != 0 && data.status == 1){
@@ -79,6 +69,7 @@ chrome.storage.sync.get(["extension_data"], function(items){
 	} else{
 		timer = 0;
 	}
+	
 	function setTimer(time,timeline){
 		var sec = Math.round(time/1000);
 		var min = Math.floor(sec/60);
@@ -93,17 +84,23 @@ chrome.storage.sync.get(["extension_data"], function(items){
             }
         }
         if(stat%2==1){
-            $("#modus").html("Arbeitszeit!");
+            $("#modus").html("Study Time!");
             $("#timer").css("color","red");
             updateStorage({isBlocked:true});
         } else{
-            $("#modus").html("Pause!");
+            $("#modus").html("Break!");
             updateStorage({isBlocked:false});
             $("#timer").css("color","green");
         }
 		$("#timer").html(Math.floor((mins-min)/60)+"h "+(mins-min-1)%60+"min "+(59-sec%60)+"s");
 	}
 });
+
+$("#close").click(function(){
+	window.close();
+});
+
+
 function updateStorage(obj){
     chrome.storage.sync.get(["extension_data"], function(items){
         var data = items.extension_data;
