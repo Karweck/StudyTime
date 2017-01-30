@@ -19,6 +19,7 @@ setInterval(function(){
         }
         
         var data = items.extension_data;
+        
         var changes = {};
         changes.timer = setTimer(data);
         //index in der WorkTimeline

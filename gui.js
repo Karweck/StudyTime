@@ -1,6 +1,6 @@
 var colors = ["#92b745","#D9000F"];
 var statuses = ["Start Studying","Stop Studying?"];
-var headers = ["Arbeitszeit!","Pause!"];
+var headers = ["Arbeitszeit!","Pause!","STATUS"];
 //Make data available to all EventListeners
 var data;
 
@@ -10,7 +10,13 @@ setInterval(function(){
         $("#start-stop").html(statuses[data.status]);
         $("#start-stop").css("background-color", colors[data.status]);
         $("#start-stop").attr("name",data.status);
-        $("#modus").html(headers[data.isWorkTime ? 1 : 0]);
+        
+        if(data.status == 1){
+            $("#modus").html(headers[data.isWorkTime ? 1 : 0]);
+        } else{
+            $("#modus").html(headers[2]);
+        }
+        $("#modus").html();
         if(data.status == 1){
             timer = data.timer;
             $("#timer").html(timer.h+"h "+timer.m+"m "+timer.s+"s");

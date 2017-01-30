@@ -14,6 +14,19 @@ $("#stop-quit").click(function(){
         chrome.tabs.update(tabs[0].id, {url: "http://google.de"});
     });
 });
+setInterval(function(){
+    chrome.storage.sync.get(["extension_data"], function(items){
+        var data = items.extension_data;
+        $(".time > #digit4").html(data.timer.s.substr(1,1));
+        $(".time > #digit3").html(data.timer.s.substr(0,1));
+        $(".time > #digit2").html(data.timer.m.substr(1,1));
+        $(".time > #digit1").html(data.timer.m.substr(0,1));
+    });
+},500);
+$(".settings-icon-quit").click(function(){
+    var win = window.open("../options/options.html#settings", '_blank');
+    win.focus();
+});
 function updateStorage(obj){
     chrome.storage.sync.get(["extension_data"], function(items){
         var data = items.extension_data;
@@ -22,49 +35,4 @@ function updateStorage(obj){
         });
         chrome.storage.sync.set({'extension_data': data});
     });
-  
-}
-chrome.storage.sync.get(["extension_data"], function(items){
-    var data = items.extension_data;
-    setInterval(function(){
-      var now = new Date().getTime();
-        setTimer(now-data.time,data.workTimeline);  
-    },500);
-    
-});
-
-function setTimer(time,timeline){
-		var sec = Math.round(time/1000);
-		var min = Math.floor(sec/60);
-		var hour = Math.floor(min/60);
-        var mins = 0;
-        for(var i=0;i<timeline.length*20;i++){
-            if(min<mins){
-                var stat = i%timeline.length;
-                break;
-            } else{
-                mins += timeline[i%timeline.length];
-            }
-        }
-        if(stat%2==1){
-            $("#citation").html(citation);
-        } else{
-            $("#citation").html("Du hast jetzt Pause!");
-        }
-		$(".time > #digit4").html(zeropad(59-sec%60,2).substr(1,1));
-        $(".time > #digit3").html(zeropad(59-sec%60,2).substr(0,1));
-        $(".time > #digit2").html(zeropad((mins-min-1)%60,2).substr(1,1));
-        $(".time > #digit1").html(zeropad((mins-min-1)%60,2).substr(0,1));
-	}
-$(".settings-icon-quit").click(function(){
-        var win = window.open("../options/options.html#settings", '_blank');
-        win.focus();
-    });
-function zeropad(integer,len){
-    string = integer + "";
-    while(string.length < len){
-        string = "0"+string;
-    }
-    return string;
-    
 }
