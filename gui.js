@@ -1,29 +1,28 @@
+//Make Backgrounddata available to all EventListeners
+var background = chrome.extension.getBackgroundPage();
+var data = background.data;
+
 var colors = ["#92b745","#D9000F"];
 var statuses = ["Start Studying","Stop Studying?"];
-var headers = ["Arbeitszeit!","Pause!","STATUS"];
-//Make data available to all EventListeners
-var data;
+var headers = ["Pause!","Arbeitszeit!","STATUS"];
 
 setInterval(function(){
-    chrome.storage.sync.get(["extension_data"], function(items){
-        data = items.extension_data;
-        $("#start-stop").html(statuses[data.status]);
-        $("#start-stop").css("background-color", colors[data.status]);
-        $("#start-stop").attr("name",data.status);
-        
-        if(data.status == 1){
-            $("#modus").html(headers[data.isWorkTime ? 1 : 0]);
-        } else{
-            $("#modus").html(headers[2]);
-        }
-        $("#modus").html();
-        if(data.status == 1){
-            timer = data.timer;
-            $("#timer").html(timer.h+"h "+timer.m+"m "+timer.s+"s");
-        } else{
-            $("#timer").html("TIMER");
-        }
-    });  
+    $("#start-stop").html(statuses[data.status]);
+    $("#start-stop").css("background-color", colors[data.status]);
+    $("#start-stop").attr("name",data.status);
+
+    if(data.status == 1){
+        $("#modus").html(headers[data.isWorkTime ? 1 : 0]);
+    } else{
+        $("#modus").html(headers[2]);
+    }
+    $("#modus").html();
+    if(data.status == 1){
+        timer = data.timer;
+        $("#timer").html(timer.h+"h "+timer.m+"m "+timer.s+"s");
+    } else{
+        $("#timer").html("TIMER");
+    }
 },500);
 
 
@@ -39,7 +38,7 @@ $("#start-stop").click(function(){
         var win = window.open("quit/quit.html", '_blank');
         win.focus();
     }
-    updateStorage(changes);
+    updateData(changes);
 });
 
 function updateStorage(obj){
@@ -49,5 +48,10 @@ function updateStorage(obj){
            data[key] = obj[key]; 
         });
         chrome.storage.sync.set({'extension_data': data});
+    });
+}
+function updateData(obj){
+    Object.keys(obj).forEach(function (key) {
+        data[key] = obj[key]; 
     });
 }

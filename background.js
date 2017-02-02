@@ -1,51 +1,50 @@
-
-//MainLoop
+var data;
 var initData = {
 	status: 0,
 	time: 0,
     timer: {h:"00",m:"00",s:"00"},
-    workTimeline: [1,1,1,1],
+    workTimeline: [25,5,25,15],
     isWorkTime: false,
     isBlocked: false,
     blacklist: ["minecraft","Spielaffe","1001Spiele","web.whatsapp","Facebook","Twitter","Amazon","Instagram","Netflix","Sport1","Apple","9gag","Wdr","Gamestar","Skype","Samsung","Prosieben","Pearl","Jetztspielen","Sat1","Nike","Pc-magazin","Parship","Youtube","Conrad"],
     whitelist: []
 };
 
-
+chrome.storage.sync.get(["extension_data"], function(items){
+    if(JSON.stringify(items) == JSON.stringify({})){
+        chrome.storage.sync.set({'extension_data': initData},function(){
+            data = initData;
+        });
+    }
+    data = items.extension_data;
+});
+//MainLoop
 setInterval(function(){
-    chrome.storage.sync.get(["extension_data"], function(items){
-        if(JSON.stringify(items) == JSON.stringify({})){
-            chrome.storage.sync.set({'extension_data': initData});
-        }
-        
-        var data = items.extension_data;
-        
-        var changes = {};
-        changes.timer = setTimer(data);
-        //index in der WorkTimeline
-        var zyklus = getZyklus(data);
-        if(zyklus%2==1){
-            changes.isWorkTime = false;
-            changes.isBlocked = false;
-        } else{
-            changes.isWorkTime = true;
-            changes.isBlocked = true;
-        }
-        if(zyklus%2==1 && data.isWorkTime==true){
-            alert("Pause!");
-        }
-        if(zyklus%2==0 && data.isWorkTime==false){
-            alert("Auf an die Arbeit!");
-        }
-        if(data.isBlocked == true && data.status == 1){
-            redirect(data);
-        }
-        updateStorage(changes);
-    });
-},500);
+    var changes = {};
+    changes.timer = setTimer(data);
+    //index in der WorkTimeline
+    var zyklus = getZyklus(data);
+    if(zyklus%2==1){
+        changes.isWorkTime = false;
+        changes.isBlocked = false;
+    } else{
+        changes.isWorkTime = true;
+        changes.isBlocked = true;
+    }
+    //alert(JSON.stringify(data));
+    if(zyklus%2==1 && data.isWorkTime==true){
+        alert("Pause!");
+    }
+    if(zyklus%2==0 && data.isWorkTime==false){
+        alert("Auf an die Arbeit!");
+    }
+    if(data.isBlocked == true && data.status == 1){
+        redirect(data);
+    }
+    updateData(changes);
+},100);
 //Functions
 function redirect(data){
-    
      chrome.tabs.query({'active': true, 'lastFocusedWindow': true}, function (tabs) {
         var url = tabs[0].url;
         var forbidden = false;
@@ -74,6 +73,11 @@ function updateStorage(obj){
         });
         chrome.storage.sync.set({'extension_data': data});
     }); 
+}
+function updateData(obj){
+    Object.keys(obj).forEach(function (key) {
+        data[key] = obj[key]; 
+    });
 }
 function getZyklus(data){
     var now = new Date().getTime();

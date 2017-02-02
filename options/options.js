@@ -1,3 +1,7 @@
+//Make Backgrounddata available
+var background = chrome.extension.getBackgroundPage();
+var data = background.data;
+
 $(".menu > div").click(function(){
     var id = $(this).attr("id");
     $(".tab").hide();
@@ -14,10 +18,7 @@ if(location.hash != ""){
 	$("#settings-tab").show();
 	$("#settings").addClass("active");
 }
-chrome.storage.sync.get(["extension_data"], function(items){
-    var data = items.extension_data;
-    for(var i=0;i<data.blacklist.length;i++){
-        $(".blacklist-box").append("<div class='col-md-3 col-xs-6 col-lg-2'><div>"+data.blacklist[i]+"<i style='float:right;font-size: 20px;' class='fa fa-times' aria-hidden='true'></i></div></div>");
-    }
-    
-});
+
+for(var i=0;i<data.blacklist.length;i++){
+    $(".blacklist-box").append("<div class='col-md-3 col-xs-6 col-lg-2'><div>"+data.blacklist[i]+"<i style='float:right;font-size: 20px;' class='fa fa-times' aria-hidden='true'></i></div></div>");
+}
