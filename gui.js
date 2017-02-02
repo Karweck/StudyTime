@@ -25,7 +25,6 @@ setInterval(function(){
     }
 },500);
 
-
 $("#close").click(function(){
 	window.close();
 });

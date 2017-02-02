@@ -70,14 +70,15 @@ function redirect(data){
         }
     });  
 }
-function updateStorage(obj){
+function updateStorage(obj,callback){
     chrome.storage.sync.get(["extension_data"], function(items){
         var data = items.extension_data;
         Object.keys(obj).forEach(function (key) {
            data[key] = obj[key]; 
         });
         chrome.storage.sync.set({'extension_data': data});
-    }); 
+    });
+    
 }
 function updateData(obj){
     Object.keys(obj).forEach(function (key) {
