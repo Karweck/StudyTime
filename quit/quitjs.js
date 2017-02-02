@@ -18,10 +18,13 @@ $("#stop-quit").click(function(){
     });
 });
 setInterval(function(){
+    
     $(".time > #digit4").html(data.timer.s.substr(1,1));
     $(".time > #digit3").html(data.timer.s.substr(0,1));
     $(".time > #digit2").html(data.timer.m.substr(1,1));
     $(".time > #digit1").html(data.timer.m.substr(0,1));
+    
+
 },500);
 $(".settings-icon-quit").click(function(){
     var win = window.open("../options/options.html#settings", '_blank');

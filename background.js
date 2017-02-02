@@ -21,7 +21,12 @@ chrome.storage.sync.get(["extension_data"], function(items){
 //MainLoop
 setInterval(function(){
     var changes = {};
-    changes.timer = setTimer(data);
+    if(data.status == 1){
+        changes.timer = setTimer(data);
+    } else {
+        changes.timer = {h:"00",m:"00",s:"00"};
+    }
+    
     //index in der WorkTimeline
     var zyklus = getZyklus(data);
     if(zyklus%2==1){
