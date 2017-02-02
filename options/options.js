@@ -41,7 +41,10 @@ function showBlacklist(){
     });
     $(".blacklist-box").append("<div class='col-md-3 col-xs-6 col-lg-2'><div class=''><input id='blacklist-input' type='text'></input><i class='fa blacklist-add fa-check' aria-hidden='true'></i></div></div>");
     $(".blacklist-add").click(function(){
-        var filtertext = $("#blacklist-input").val(); 
+        var filtertext = $("#blacklist-input").val();
+        if(filtertext.length < 3){
+            return;
+        }
         var blacklist = data.blacklist;
         blacklist.push(filtertext);
         var changes = {blacklist: blacklist};
@@ -72,6 +75,9 @@ function showWhitelist(){
     $(".whitelist-box").append("<div class='col-md-3 col-xs-6 col-lg-2'><div class=''><input id='whitelist-input' type='text'></input><i class='fa whitelist-add fa-check' aria-hidden='true'></i></div></div>");
     $(".whitelist-add").click(function(){
         var filtertext = $("#whitelist-input").val();
+        if(filtertext.length < 3){
+            return;
+        }
         var whitelist = data.whitelist;
         whitelist.push(filtertext);
         var changes = {whitelist: whitelist};
