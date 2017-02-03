@@ -3,7 +3,7 @@ var initData = {
 	status: 0,
 	time: 0,
     timer: {h:"00",m:"00",s:"00"},
-    workTimeline: [25,5,25,15],
+    workTimeline: [1,1,1,1],
     isWorkTime: false,
     isBlocked: false,
     blacklist: ["minecraft","Spielaffe","1001Spiele","web.whatsapp","Facebook","Twitter","Amazon","Instagram","Netflix","Sport1","Apple","9gag","Wdr","Gamestar","Skype","Samsung","Prosieben","Pearl","Jetztspielen","Sat1","Nike","Pc-magazin","Parship","Youtube","Conrad"],
@@ -38,10 +38,10 @@ setInterval(function(){
     }
     //alert(JSON.stringify(data));
     if(zyklus%2==1 && data.isWorkTime==true){
-        alert("Pause!");
+        playSound("dong.mp3");
     }
     if(zyklus%2==0 && data.isWorkTime==false){
-        alert("Auf an die Arbeit!");
+        playSound("dong.mp3");
     }
     if(data.isBlocked == true && data.status == 1){
         redirect(data);
@@ -125,5 +125,10 @@ function zeropad(integer,len){
         string = "0"+string;
     }
     return string;
+}
+function playSound(url){
+    var myAudio = new Audio();
+    myAudio.src = url;
+    myAudio.play()
 }
 

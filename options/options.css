@@ -120,7 +120,11 @@ body{
     border-color: #555;
 }
  
-
+.radio > p{
+    padding: 15px;
+    padding-right: 30px;
+    
+}
 ::-webkit-scrollbar {
   width: 5px;
 }
