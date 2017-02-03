@@ -3,11 +3,16 @@ var initData = {
 	status: 0,
 	time: 0,
     timer: {h:"00",m:"00",s:"00"},
-    workTimeline: [1,1,1,1],
+    workTimeline: {name:"Pomodoro Timer",description:"",timeline:[25,5,25,15]},
     isWorkTime: false,
     isBlocked: false,
     blacklist: ["minecraft","Spielaffe","1001Spiele","web.whatsapp","Facebook","Twitter","Amazon","Instagram","Netflix","Sport1","Apple","9gag","Wdr","Gamestar","Skype","Samsung","Prosieben","Pearl","Jetztspielen","Sat1","Nike","Pc-magazin","Parship","Youtube","Conrad"],
-    whitelist: []
+    whitelist: [],
+    timelines: [
+            {name:"Pomodoro Timer",description:"",timeline:[25,5,25,15]},
+            {name:"Power Hour",description:"",timeline:[60,20,60,20]},
+            {name:"Schule",description:"",timeline:[45,5,45,15]}
+        ]   
 };
 
 chrome.storage.sync.get(["extension_data"], function(items){
@@ -86,32 +91,34 @@ function updateData(obj){
     });
 }
 function getZyklus(data){
+    var workTimeline = data.workTimeline.timeline;
     var now = new Date().getTime();
     var sec = Math.floor((now-data.time)/1000);
     var min = Math.floor(sec/60);
     var mins = 0;
-    for(var i=0;i<data.workTimeline.length*20;i++){
+    for(var i=0;i<workTimeline.length*20;i++){
         if(min<mins){
-            var stat = i%data.workTimeline.length;
+            var stat = i%workTimeline.length;
             break;
         } else{
-            mins += data.workTimeline[i%data.workTimeline.length];
+            mins += workTimeline[i%workTimeline.length];
         }
     }
     return stat-1;
 }
 
 function setTimer(data){
+    var workTimeline = data.workTimeline.timeline;
     var now = new Date().getTime();
     var sec = Math.floor((now-data.time)/1000);
     var min = Math.floor(sec/60);
     var mins = 0;
-    for(var i=0;i<data.workTimeline.length*20;i++){
+    for(var i=0;i<workTimeline.length*20;i++){
         if(min<mins){
-            var stat = i%data.workTimeline.length;
+            var stat = i%workTimeline.length;
             break;
         } else{
-            mins += data.workTimeline[i%data.workTimeline.length];
+            mins += workTimeline[i%workTimeline.length];
         }
     }
     var hours = zeropad(Math.floor((mins-min)/60),2);

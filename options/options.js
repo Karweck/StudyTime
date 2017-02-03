@@ -2,6 +2,7 @@
 var background = chrome.extension.getBackgroundPage();
 var data = background.data;
 
+//Menüclickevents und Seitenwechsel
 $(".menu > div").click(function(){
     var id = $(this).attr("id");
     $(".tab").hide();
@@ -9,7 +10,7 @@ $(".menu > div").click(function(){
 	$(".menu > div").removeClass("active");
 	$(this).addClass("active");
 });
-
+//Auswahl der richtigen Startseite bei Hash in URL
 if(location.hash != ""){
     $(".tab").hide();
     $("#"+location.hash.replace("#","")+"-tab").show();
@@ -18,9 +19,77 @@ if(location.hash != ""){
 	$("#settings-tab").show();
 	$("#settings").addClass("active");
 }
-//!Reihenfolge beachten: zuerst Elemente generieren, dann Clickevent
+
+
 showBlacklist();
 showWhitelist();
+showTimerOptions();
+
+function showTimerOptions(){
+    $(".timer-options").html("");
+    data.timelines.forEach(function(elm,index){
+        var active = "";
+        if(JSON.stringify(elm) == JSON.stringify(data.workTimeline)){
+            active = "timerElementActive";
+        }
+        var element = "<div name='"+index+"' class='timerElement "+active+"'><h3>"+elm.name+"<i  class='fa fa-times timerElementDelete' aria-hidden='true'></i></h3>";
+        element += "<div><span>";
+        element += elm.timeline.join("</span><i class='fa fa-angle-double-right' aria-hidden='true'></i><span>");
+        element += "</span></div>";
+        element += "<p>"+elm.description+"</p></div>"
+        $(".timer-options").append(element);
+    });
+    $(".timerElement").click(function(){
+        var index = $(this).attr("name");
+        var changes = {workTimeline:data.timelines[parseInt(index)]};
+        updateData(changes);
+        updateStorage(changes);
+        showTimerOptions();
+    });
+    $(".timerElementDelete").click(function(e){
+        e.stopPropagation();
+        var index = $(this).parent().parent().attr("name");
+        var newTimelines = data.timelines;
+        newTimelines.splice(index,1);
+        var changes = {workTimeline:newTimelines};
+        updateData(changes);
+        updateStorage(changes);
+        showTimerOptions();
+    });
+    generateTimeForm();
+}
+function generateTimeForm(){
+    var element = "<div class='timerElement newTimeOption'>";
+    element += "<h3>Eigenes Zeitprofil erstellen</h3>"
+    element += "<input placeholder='Name' class='newTimeOptionName'></input><br><div>";
+    for(var i=0;i<4;i++){
+        element += "<span><input class='newTimeOptionTime' placeholder='--'></input></span>";
+        if(i<=2){
+            element += "<i class='fa fa-angle-double-right' aria-hidden='true'></i>";
+        }
+    }
+    element += "</div><h4 class='newTimeOptionSave'><i class='fa fa-floppy-o' aria-hidden='true'></i></h4></div>";
+    $(".timer-options").append(element);
+    $(".newTimeOptionSave").click(function(){
+        var timeline = {};
+        timeline.name = $(".newTimeOptionName").val();
+        if(timeline.name == ""){
+            timeline.name = "Neue Zeitprofil";
+        }
+        timeline.timeline = [];
+        $(".newTimeOptionTime").each(function(elm){
+            timeline.timeline.push(parsePosIntInput($(this).val()));
+        });
+        timeline.description = "";
+        var newTimelines = data.timelines;
+        newTimelines.push(timeline);
+        var changes = {timelines:newTimelines,workTimeline:newTimelines};
+        updateData(changes);
+        updateStorage(changes);
+        showTimerOptions();
+    });
+}
+//Blacklist und Whitelist haben identischen Aufbau, bis auf Namen der Klassen
 function showBlacklist(){
     $(".blacklist-box").html("");
     for(var i=0;i<data.blacklist.length;i++){
@@ -53,7 +122,6 @@ function showBlacklist(){
         showBlacklist();
     });
 }
-
 function showWhitelist(){
     $(".whitelist-box").html("");
     for(var i=0;i<data.whitelist.length;i++){
@@ -86,6 +154,18 @@ function showWhitelist(){
         showWhitelist();
     });
 }
+function parsePosIntInput(str){
+    if(isNaN(parseInt(str))){
+        return 0;
+    }
+    else if(parseInt(str) < 0){
+        return 0;
+    }
+    else{
+        return parseInt(str);
+    }
+}
+//Main functions
 function updateStorage(obj){
     chrome.storage.sync.get(["extension_data"], function(items){
         var data = items.extension_data;

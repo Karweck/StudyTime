@@ -84,8 +84,10 @@ body{
 }
 
 .timer-options{
-	margin-top: 5%;
-	margin-left: 10%;
+    margin-top: 2%;
+    margin-left: 10%;
+    overflow-y: auto;
+    height: 80%;
 }
 
 .radio{
@@ -123,7 +125,60 @@ body{
 .radio > p{
     padding: 15px;
     padding-right: 30px;
-    
+}
+.timerElement{
+    padding: 20px;
+    cursor: pointer;
+    display: inline-block;
+    margin: 20px;
+}
+.timerElementActive{
+    background-color: rgba(0, 0, 0, 0.22);
+    display: inline-block;
+    border-left: 2px white solid;
+    cursor: default;
+}
+.timerElement > div {
+    padding: 11px;
+    border: 1px white solid;
+    display: inline-block;
+    margin-left: 15px;
+}
+.timerElement > div > span{
+    margin: 15px;
+    padding: 5px;
+    background-color: rgba(255, 255, 255, 0.13);
+}
+.timerElement > div > span > input{
+    background-color: transparent;
+    border: 0pc;
+    width: 20px;
+    text-align: center;
+}
+.timerElement > h3{
+    top: 0px;
+    margin-top: 5px;
+}
+.newTimeOption{
+    cursor: default;
+}
+.timerElement > h3 > i{
+    float: right;
+    cursor: pointer;
+}
+.newTimeOptionName {
+    background-color: rgba(255, 255, 255, 0.09);
+    border: 0px;
+    margin: 15px;
+    padding: 5px;
+}
+.newTimeOptionSave{
+    margin: 15px;
+    padding: 5px;
+    background-color: rgba(255, 255, 255, 0.12);
+    display: table;
+    color: #d6d6d6;
+    cursor: pointer;
 }
 ::-webkit-scrollbar {
   width: 5px;
