@@ -180,14 +180,15 @@ function showStatistics(){
     var sum = 0;
     var elements = "";
     $(".domain-statistic").html("");
+    
     data.visitedDomains = data.visitedDomains.sort(function(a, b){
-  return a.ticks < b.ticks;
+    return a.ticks < b.ticks;
     });
     data.visitedDomains.forEach(function(elem){
         sum += elem.ticks;
     });
     data.visitedDomains.forEach(function(elem){
-        if(elem.domain == "NaN" || elem.domain == "extensions" || elem.domain == "newtab" || (elem.domain.length > 10 && elem.domain.indexOf(".") == -1) || elem.ticks < 5*60){
+        if(elem.ticks < 5*60){
             return;
         }
         var width = 100*elem.ticks/sum;

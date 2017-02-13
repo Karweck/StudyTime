@@ -89,6 +89,9 @@ function logPage(data){
     if(domain == ""){
         domain = "NaN";
     }
+    if(domain == "NaN" || domain == "extensions" || domain == "newtab" || (domain.length > 10 && domain.indexOf(".") == -1)){
+            return;
+    }
     var exists = false;
     var index = 0;
     data.visitedDomains.forEach(function(elem,num){
