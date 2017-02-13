@@ -173,8 +173,8 @@ function milliSecToTime(val){
     var min = Math.floor(sec/60);
     var hours = Math.floor(min/60);
     var minutes = Math.floor((min)%60);
-    var seconds = Math.floor((59-sec%60));
-    return hours+"h "+minutes+"m "+seconds+"s";
+    //var seconds = Math.floor(((59-sec-60)%60));
+    return hours+"h "+minutes+"m";
 }
 function showStatistics(){
     var sum = 0;
