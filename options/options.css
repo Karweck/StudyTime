@@ -56,7 +56,7 @@ body{
     
 }
 .menu > * > .fa{
-	font-size: 69px !important;
+	font-size: 60px !important;
     line-height: 33vh !important;
 }
 .tab{
@@ -179,6 +179,22 @@ body{
     display: table;
     color: #d6d6d6;
     cursor: pointer;
+}
+.domain-statistic{
+    padding: 30px;
+}
+.statistic-element{
+    padding: 5px;
+    box-shadow: inset 0px 0px 1px 1px rgba(255, 255, 255, 0.2);
+    margin: 5px;
+    position: relative;
+}
+.statistic-element > div{
+    background-color: rgba(255, 255, 255, 0.22);
+    height: 100%;
+    position: absolute;
+    margin: -5px;
+    border-right: 3px solid white;
 }
 ::-webkit-scrollbar {
   width: 5px;

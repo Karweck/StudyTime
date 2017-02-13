@@ -24,7 +24,10 @@ if(location.hash != ""){
 showBlacklist();
 showWhitelist();
 showTimerOptions();
-
+showStatistics();
+setInterval(function(){
+    showStatistics();
+},30000);
 function showTimerOptions(){
     $(".timer-options").html("");
     data.timelines.forEach(function(elm,index){
@@ -165,6 +168,28 @@ function parsePosIntInput(str){
         return parseInt(str);
     }
 }
+function milliSecToTime(val){
+    var sec = Math.floor((val)/1000);
+    var min = Math.floor(sec/60);
+    var hours = Math.floor(min/60);
+    var minutes = Math.floor((min)%60);
+    var seconds = Math.floor((59-sec%60));
+    return hours+"h "+minutes+"m "+seconds+"s";
+}
+function showStatistics(){
+    var sum = 0;
+    var elements = "";
+    $(".domain-statistic").html("");
+    for(var key in data.visitedDomains){
+        sum += data.visitedDomains[key].ticks;
+    }
+    for(var key in data.visitedDomains){
+        var width = 100*data.visitedDomains[key].ticks/sum;
+        elements += "<div class='statistic-element'><div style='width:"+width+"%'></div>"+key+" "+milliSecToTime(data.visitedDomains[key].ticks*200)+"</div>";
+    }
+    $(".domain-statistic").append(elements);
+}
+
 //Main functions
 function updateStorage(obj){
     chrome.storage.sync.get(["extension_data"], function(items){
