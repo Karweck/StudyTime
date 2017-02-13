@@ -195,6 +195,10 @@ body{
     position: absolute;
     margin: -5px;
     border-right: 3px solid white;
+    transition: width 10s;
+}
+.statistic-element > span{
+    margin-left: 30px;
 }
 ::-webkit-scrollbar {
   width: 5px;

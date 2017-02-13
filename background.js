@@ -14,7 +14,7 @@ var initData = {
             {name:"Schule",description:"",timeline:[45,5,45,15]}
         ],
     pageURL: "",
-    visitedDomains: {}
+    visitedDomains: []
 };
 //Data aus Storage laden oder Storage initialisieren
 chrome.storage.sync.get(["extension_data"], function(items){
@@ -77,9 +77,7 @@ setInterval(function(){
 
 //Alle Funktionen:
 function logPage(data){
-    var domains = Object.keys(data.visitedDomains);
     var url = data.pageURL;
-    
     var domain;
     if (url.indexOf("://") > -1) {
         domain = url.split('/')[2];
@@ -91,16 +89,18 @@ function logPage(data){
     if(domain == ""){
         domain = "NaN";
     }
-    var check = false;
-    for(var i=0;i<domains.length;i++){
-        if(domains[i] == domain){
-            check = true;
+    var exists = false;
+    var index = 0;
+    data.visitedDomains.forEach(function(elem,num){
+        if(elem.domain == domain){
+            exists = true;
+            index = num;
         }
-    }
-    if(check){
-        data.visitedDomains[domain].ticks++; 
+    });
+    if(exists){
+        data.visitedDomains[index].ticks++; 
     } else{
-        data.visitedDomains[domain] = {ticks:1};
+        data.visitedDomains.push({domain:domain,ticks:1});
     }
 }
 function redirect(data){

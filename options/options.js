@@ -180,13 +180,19 @@ function showStatistics(){
     var sum = 0;
     var elements = "";
     $(".domain-statistic").html("");
-    for(var key in data.visitedDomains){
-        sum += data.visitedDomains[key].ticks;
-    }
-    for(var key in data.visitedDomains){
-        var width = 100*data.visitedDomains[key].ticks/sum;
-        elements += "<div class='statistic-element'><div style='width:"+width+"%'></div>"+key+" "+milliSecToTime(data.visitedDomains[key].ticks*200)+"</div>";
-    }
+    data.visitedDomains = data.visitedDomains.sort(function(a, b){
+  return a.ticks < b.ticks;
+    });
+    data.visitedDomains.forEach(function(elem){
+        sum += elem.ticks;
+    });
+    data.visitedDomains.forEach(function(elem){
+        if(elem.domain == "NaN" || elem.domain == "extensions" || elem.domain == "newtab" || (elem.domain.length > 10 && elem.domain.indexOf(".") == -1) || elem.ticks < 5*60){
+            return;
+        }
+        var width = 100*elem.ticks/sum;
+        elements += "<div class='statistic-element'><div style='width:"+width+"%'></div>"+elem.domain+"<span>"+milliSecToTime(elem.ticks*200)+"</span></div>";
+    });
     $(".domain-statistic").append(elements);
 }
 
@@ -198,7 +204,7 @@ function updateStorage(obj){
            data[key] = obj[key]; 
         });
         chrome.storage.sync.set({'extension_data': data});
-    }); 
+    });
 }
 function updateData(obj){
     Object.keys(obj).forEach(function (key) {
