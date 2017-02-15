@@ -1,4 +1,27 @@
 var data;
+
+
+//Datenbank für Browserhistory uvm.
+
+var dbName = "StudyTimeDB";
+var storeName = "BrowserHistory";
+var db;
+var req = indexedDB.open(dbName, 10);
+req.onsuccess = function (evt) {
+    db = req.result;
+};
+req.onerror = function (evt) {
+    alert(evt.target.errorCode);
+};
+req.onupgradeneeded = function (evt) {
+    var db = evt.target.result;
+    if (db.objectStoreNames.contains(storeName)) {
+      db.deleteObjectStore(storeName);
+    }
+    var store = db.createObjectStore(
+        storeName, { keyPath: "date", autoIncrement: true });
+};
+
 var initData = {
 	status: 0,
 	time: 0,
@@ -13,7 +36,8 @@ var initData = {
             {name:"Power Hour",description:"",timeline:[60,20,60,20]},
             {name:"Schule",description:"",timeline:[45,5,45,15]}
         ],
-    pageURL: "",
+    page: {date:"",URL:"",domain:"",duration:"",keywords:[],URLs:[]},
+    
     visitedDomains: []
 };
 //Data aus Storage laden oder Storage initialisieren
@@ -62,22 +86,57 @@ setInterval(function(){
     
     //URL des aktiven Tabs für den nächsten Zyklus bereitstellen
     chrome.tabs.query({'active': true, 'lastFocusedWindow': true}, function (tabs) {
-        data.pageURL = tabs[0].url;
+        logPage(data,tabs[0].url);
     });
-    logPage(data);
     updateData(changes);
     
     //Updateintervall
-},200);
-//Domain-Statistik dauerhaft speichern
-setInterval(function(){
-    var changes = {visitedDomains:data.visitedDomains};
-    updateStorage(changes);
-},30000);
-
+},1000);
 //Alle Funktionen:
-function logPage(data){
-    var url = data.pageURL;
+
+function logPage(data,url){
+    var transaction = db.transaction("BrowserHistory", "readwrite");
+    var store = transaction.objectStore("BrowserHistory");
+    var domain = extractDomain(url);
+    var dateTime = Date.now();
+    if(domain != data.page.domain){
+        //Domainwechsel: Letzten Seitenaufenthalt in DB speichern
+        if(data.page.date != ""){
+            store.add(data.page);
+        }
+        var page = {
+           date:dateTime,
+           URL:url,
+           URLs:[url],
+           domain:domain,
+           keywords:[],
+           duration:0
+        }
+        data.page = page;
+    } else{
+        //Seitenaufenthaltsobjekt updaten
+        if(url != data.page.URL){
+            data.page.URLs.push(url);
+            data.page.URL = url;
+        }
+        data.page.duration++;
+    }
+}
+function loadBrowserHistory(){
+    var transaction = db.transaction("BrowserHistory", "readwrite");
+    var store = transaction.objectStore("BrowserHistory");
+    store.openCursor().onsuccess = function(event) {
+      var cursor = event.target.result;
+      if (cursor) {
+        alert("<p>"+cursor.key+" "+JSON.stringify(cursor.value)+"</p>");
+        cursor.continue();
+      }
+      else {
+          //Fertig
+      }
+    };
+}
+function extractDomain(url){
     var domain;
     if (url.indexOf("://") > -1) {
         domain = url.split('/')[2];
@@ -89,22 +148,7 @@ function logPage(data){
     if(domain == ""){
         domain = "NaN";
     }
-    if(domain == "NaN" || domain == "extensions" || domain == "newtab" || (domain.length > 10 && domain.indexOf(".") == -1)){
-            return;
-    }
-    var exists = false;
-    var index = 0;
-    data.visitedDomains.forEach(function(elem,num){
-        if(elem.domain == domain){
-            exists = true;
-            index = num;
-        }
-    });
-    if(exists){
-        data.visitedDomains[index].ticks++; 
-    } else{
-        data.visitedDomains.push({domain:domain,ticks:1});
-    }
+    return domain;
 }
 function redirect(data){
     var url = data.pageURL;

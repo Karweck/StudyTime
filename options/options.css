@@ -182,6 +182,8 @@ body{
 }
 .domain-statistic{
     padding: 30px;
+    overflow-y:scroll;
+    height: 78vh;
 }
 .statistic-element{
     padding: 5px;

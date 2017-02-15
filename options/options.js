@@ -2,6 +2,28 @@
 var background = chrome.extension.getBackgroundPage();
 var data = background.data;
 
+//Datenbank für Browserhistory uvm.
+var dbName = "StudyTimeDB";
+var storeName = "BrowserHistory";
+var db;
+var req = indexedDB.open(dbName, 10);
+req.onsuccess = function (evt) {
+    db = req.result;
+showStatistics();
+};
+req.onerror = function (evt) {
+    alert(evt.target.errorCode);
+};
+req.onupgradeneeded = function (evt) {
+    var db = evt.target.result;
+    if (db.objectStoreNames.contains(storeName)) {
+      db.deleteObjectStore(storeName);
+    }
+    var store = db.createObjectStore(
+        storeName, { keyPath: "date", autoIncrement: true });
+};
+
+
 //Menüclickevents und Seitenwechsel
 $(".menu > div").click(function(){
     var id = $(this).attr("id");
@@ -24,10 +46,11 @@ if(location.hash != ""){
 showBlacklist();
 showWhitelist();
 showTimerOptions();
-showStatistics();
+/*
 setInterval(function(){
     showStatistics();
 },30000);
+*/
 function showTimerOptions(){
     $(".timer-options").html("");
     data.timelines.forEach(function(elm,index){
@@ -176,25 +199,48 @@ function milliSecToTime(val){
     //var seconds = Math.floor(((59-sec-60)%60));
     return hours+"h "+minutes+"m";
 }
-function showStatistics(){
-    var sum = 0;
-    var elements = "";
-    $(".domain-statistic").html("");
+function showStatistics(mode){
+    if(mode = "today"){
+        var d = new Date();
+        d.setHours(0);
+        d.setMinutes(0);
+        d.setSeconds(0);
+        d.setMilliseconds(0);
+        var lowerBoundKeyRange = IDBKeyRange.lowerBound(d.getTime());
+    }
     
-    data.visitedDomains = data.visitedDomains.sort(function(a, b){
-    return a.ticks < b.ticks;
-    });
-    data.visitedDomains.forEach(function(elem){
-        sum += elem.ticks;
-    });
-    data.visitedDomains.forEach(function(elem){
-        if(elem.ticks < 5*60){
-            return;
+    $(".domain-statistic").html("");
+    var transaction = db.transaction("BrowserHistory", "readwrite");
+    var store = transaction.objectStore("BrowserHistory");
+    var records = [];
+    store.openCursor(lowerBoundKeyRange).onsuccess = function(event) {
+        var cursor = event.target.result;
+        if (cursor) {
+            records.push(cursor.value);
+            cursor.continue();
         }
-        var width = 100*elem.ticks/sum;
-        elements += "<div class='statistic-element'><div style='width:"+width+"%'></div>"+elem.domain+"<span>"+milliSecToTime(elem.ticks*200)+"</span></div>";
-    });
-    $(".domain-statistic").append(elements);
+        else {
+            console.log(records);
+            //Alle Einträge sind geladen: Auswertung und Darstellung
+            var sum = 0;
+            records.forEach(function(elem){
+                sum += elem.duration;
+            });
+            records = records.sort(function(a, b){
+                return b.duration - a.duration;
+            });
+            console.log(records);
+            var elements = "";
+            records.forEach(function(elem){
+                if(elem.duration < 60){
+                    return;
+                }
+                var width = 100*elem.duration/sum;
+                elements += "<div class='statistic-element'><div style='width:"+width+"%'></div>"+elem.domain+"<span>"+milliSecToTime(elem.duration*1000)+"</span></div>";
+            });
+            $(".domain-statistic").append(elements);
+        }
+    };
 }
 
 //Main functions
