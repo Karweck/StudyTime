@@ -222,22 +222,42 @@ function showStatistics(mode){
         else {
             console.log(records);
             //Alle Einträge sind geladen: Auswertung und Darstellung
-            var sum = 0;
+            
+            var groups = [];
             records.forEach(function(elem){
-                sum += elem.duration;
-            });
-            records = records.sort(function(a, b){
-                return b.duration - a.duration;
-            });
-            console.log(records);
-            var elements = "";
-            records.forEach(function(elem){
-                if(elem.duration < 60){
-                    return;
+                if (!groups[elem.domain]) {
+                    groups[elem.domain] = {sum:0,durations:[],domain:elem.domain};
                 }
-                var width = 100*elem.duration/sum;
-                elements += "<div class='statistic-element'><div style='width:"+width+"%'></div>"+elem.domain+"<span>"+milliSecToTime(elem.duration*1000)+"</span></div>";
+                groups[elem.domain].sum += elem.duration;
+                groups[elem.domain].durations.push(elem.duration);
             });
+            groups = groups.sort(function(a,b){
+                return a.sum - b.sum;
+            });
+            var sum = 0;
+            for(var index in groups){
+                var elem = groups[index];
+                console.log(elem.sum);
+                sum += elem.sum;
+            }
+            sum /= 10;
+            console.log(groups);
+            console.log(sum);
+            var elements = "";
+            for(var index in groups){
+                var elem = groups[index];
+                console.log(elem);
+                if(elem.sum < 60){
+                    continue;
+                }
+                elements += "<div class='statistic-element'>";
+                elem.durations.forEach(function(dur){
+                    var width = 100*dur/sum;
+                    elements += "<div style='width:"+width+"%'></div>";
+                });
+                
+                 elements += "<span>"+elem.domain+"</span><span>"+milliSecToTime(elem.sum*1000)+"</span></div>";
+            }
             $(".domain-statistic").append(elements);
         }
     };

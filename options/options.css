@@ -190,17 +190,20 @@ body{
     box-shadow: inset 0px 0px 1px 1px rgba(255, 255, 255, 0.2);
     margin: 5px;
     position: relative;
+    padding-left: 0px;
 }
 .statistic-element > div{
     background-color: rgba(255, 255, 255, 0.22);
-    height: 100%;
-    position: absolute;
-    margin: -5px;
-    border-right: 3px solid white;
+    height: 30px;
+    position: relative;
+    margin-top: -5px;
+    border-right: 1px solid white;
     transition: width 10s;
+    float: left;
+    display: block;
 }
 .statistic-element > span{
-    margin-left: 30px;
+    margin-left: 18px;
 }
 ::-webkit-scrollbar {
   width: 5px;

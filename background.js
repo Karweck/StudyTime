@@ -57,7 +57,6 @@ setInterval(function(){
     } else {
         changes.timer = {h:"00",m:"00",s:"00"};
     }
-    
     //Index der aktuellen Zeit in der WorkTimeline
     var zyklus = getZyklus(data);
     
@@ -82,13 +81,15 @@ setInterval(function(){
         redirect(data);
     }
     
+    updateData(changes);
     //Website Statistik fortsetzen
     
     //URL des aktiven Tabs für den nächsten Zyklus bereitstellen
     chrome.tabs.query({'active': true, 'lastFocusedWindow': true}, function (tabs) {
+        data.pageURL = tabs[0].url;
         logPage(data,tabs[0].url);
     });
-    updateData(changes);
+    
     
     //Updateintervall
 },1000);
@@ -166,7 +167,9 @@ function redirect(data){
         }
     }
     if(forbidden){
-        chrome.tabs.update(tabs[0].id, {url: "quit/quit.html"});
+        chrome.tabs.query({'active': true, 'lastFocusedWindow': true}, function (tabs) {
+            chrome.tabs.update(tabs[0].id, {url: "quit/quit.html"});
+        });
     }
 }
 function updateStorage(obj,callback){
