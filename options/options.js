@@ -2,6 +2,28 @@
 var background = chrome.extension.getBackgroundPage();
 var data = background.data;
 
+//Datenbank für Browserhistory uvm.
+var dbName = "StudyTimeDB";
+var storeName = "BrowserHistory";
+var db;
+var req = indexedDB.open(dbName, 10);
+req.onsuccess = function (evt) {
+    db = req.result;
+showStatistics();
+};
+req.onerror = function (evt) {
+    alert(evt.target.errorCode);
+};
+req.onupgradeneeded = function (evt) {
+    var db = evt.target.result;
+    if (db.objectStoreNames.contains(storeName)) {
+      db.deleteObjectStore(storeName);
+    }
+    var store = db.createObjectStore(
+        storeName, { keyPath: "date", autoIncrement: true });
+};
+
+
 //Menüclickevents und Seitenwechsel
 $(".menu > div").click(function(){
     var id = $(this).attr("id");
@@ -10,7 +32,6 @@ $(".menu > div").click(function(){
 	$(".menu > div").removeClass("active");
 	$(this).addClass("active");
 });
-
 //Auswahl der richtigen Startseite bei Hash in URL
 if(location.hash != ""){
     $(".tab").hide();
@@ -179,7 +200,6 @@ function milliSecToTime(val){
     return hours+"h "+minutes+"m";
 }
 function showStatistics(mode){
-   
     if(mode = "today"){
         var d = new Date();
         d.setHours(0);
@@ -188,46 +208,58 @@ function showStatistics(mode){
         d.setMilliseconds(0);
         var lowerBoundKeyRange = IDBKeyRange.lowerBound(d.getTime());
     }
-    var lowerBoundKeyRange = IDBKeyRange.lowerBound(d.getTime());
+    
     $(".domain-statistic").html("");
-    var callback = function(records){
-        var groups = [];
-        records.forEach(function(elem){
-            if (!groups[elem.domain]) {
-                groups[elem.domain] = {sum:0,durations:[],domain:elem.domain};
-            }
-            groups[elem.domain].sum += elem.duration;
-            groups[elem.domain].durations.push(elem.duration);
-        });
-        groups = groups.sort(function(a,b){
-            return a.sum - b.sum;
-        });
-        var sum = 0;
-        for(var index in groups){
-            var elem = groups[index];
-            console.log(elem.sum);
-            sum += elem.sum;
+    var transaction = db.transaction("BrowserHistory", "readwrite");
+    var store = transaction.objectStore("BrowserHistory");
+    var records = [];
+    store.openCursor(lowerBoundKeyRange).onsuccess = function(event) {
+        var cursor = event.target.result;
+        if (cursor) {
+            records.push(cursor.value);
+            cursor.continue();
         }
-        console.log(groups);
-        console.log(sum);
-        var elements = "";
-        for(var index in groups){
-            var elem = groups[index];
-            console.log(elem);
-            if(elem.sum < 60){
-                continue;
-            }
-            elements += "<div class='statistic-element'>";
-            elem.durations.forEach(function(dur){
-                var width = 100*dur/sum;
-                elements += "<div style='width:"+width+"%'></div>";
+        else {
+            console.log(records);
+            //Alle Einträge sind geladen: Auswertung und Darstellung
+            
+            var groups = [];
+            records.forEach(function(elem){
+                if (!groups[elem.domain]) {
+                    groups[elem.domain] = {sum:0,durations:[],domain:elem.domain};
+                }
+                groups[elem.domain].sum += elem.duration;
+                groups[elem.domain].durations.push(elem.duration);
             });
-
-             elements += "<span>"+elem.domain+"</span><span>"+milliSecToTime(elem.sum*1000)+"</span></div>";
+            groups = groups.sort(function(a,b){
+                return a.sum - b.sum;
+            });
+            var sum = 0;
+            for(var index in groups){
+                var elem = groups[index];
+                console.log(elem.sum);
+                sum += elem.sum;
+            }
+            console.log(groups);
+            console.log(sum);
+            var elements = "";
+            for(var index in groups){
+                var elem = groups[index];
+                console.log(elem);
+                if(elem.sum < 60){
+                    continue;
+                }
+                elements += "<div class='statistic-element'>";
+                elem.durations.forEach(function(dur){
+                    var width = 100*dur/sum;
+                    elements += "<div style='width:"+width+"%'></div>";
+                });
+                
+                 elements += "<span>"+elem.domain+"</span><span>"+milliSecToTime(elem.sum*1000)+"</span></div>";
+            }
+            $(".domain-statistic").append(elements);
         }
-        $(".domain-statistic").append(elements);
     };
-    background.loadBrowserHistory(lowerBoundKeyRange,callback);
 }
 
 //Main functions
