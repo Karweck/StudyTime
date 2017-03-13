@@ -2,28 +2,6 @@
 var background = chrome.extension.getBackgroundPage();
 var data = background.data;
 
-//Datenbank für Browserhistory uvm.
-var dbName = "StudyTimeDB";
-var storeName = "BrowserHistory";
-var db;
-var req = indexedDB.open(dbName, 10);
-req.onsuccess = function (evt) {
-    db = req.result;
-showStatistics();
-};
-req.onerror = function (evt) {
-    alert(evt.target.errorCode);
-};
-req.onupgradeneeded = function (evt) {
-    var db = evt.target.result;
-    if (db.objectStoreNames.contains(storeName)) {
-      db.deleteObjectStore(storeName);
-    }
-    var store = db.createObjectStore(
-        storeName, { keyPath: "date", autoIncrement: true });
-};
-
-
 //Menüclickevents und Seitenwechsel
 $(".menu > div").click(function(){
     var id = $(this).attr("id");
@@ -32,6 +10,7 @@ $(".menu > div").click(function(){
 	$(".menu > div").removeClass("active");
 	$(this).addClass("active");
 });
+
 //Auswahl der richtigen Startseite bei Hash in URL
 if(location.hash != ""){
     $(".tab").hide();

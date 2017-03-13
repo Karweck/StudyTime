@@ -2,7 +2,6 @@ var data;
 
 
 //Datenbank für Browserhistory uvm.
-
 var dbName = "StudyTimeDB";
 var storeName = "BrowserHistory";
 var db;
