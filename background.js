@@ -4,9 +4,10 @@ var data;
 //Datenbank für Browserhistory uvm.
 
 var dbName = "StudyTimeDB";
-var storeName = "BrowserHistory";
+var browserHistory = "BrowserHistory";
+var workTimeHistory = "WorkTimeHistory";
 var db;
-var req = indexedDB.open(dbName, 10);
+var req = indexedDB.open(dbName, 11);
 req.onsuccess = function (evt) {
     db = req.result;
 };
@@ -15,11 +16,18 @@ req.onerror = function (evt) {
 };
 req.onupgradeneeded = function (evt) {
     var db = evt.target.result;
-    if (db.objectStoreNames.contains(storeName)) {
-      db.deleteObjectStore(storeName);
+    //BrowserHistory
+    if (db.objectStoreNames.contains(browserHistory)) {
+      db.deleteObjectStore(browserHistory);
     }
-    var store = db.createObjectStore(
-        storeName, { keyPath: "date", autoIncrement: true });
+    var browserHistoryStore = db.createObjectStore(
+        browserHistory, { keyPath: "date", autoIncrement: true });
+    //StudyHistory
+    if (db.objectStoreNames.contains(workTimeHistory)) {
+      db.deleteObjectStore(workTimeHistory);
+    }
+    var workTimeHistoryStore = db.createObjectStore(
+        workTimeHistory, { keyPath: "date", autoIncrement: true });
 };
 
 var initData = {
@@ -36,8 +44,8 @@ var initData = {
             {name:"Power Hour",description:"",timeline:[60,20,60,20]},
             {name:"Schule",description:"",timeline:[45,5,45,15]}
         ],
-    page: {date:"",URL:"",domain:"",duration:"",keywords:[],URLs:[]},
-    
+    page: {date:"",URL:"",domain:"",duration:0,isBlocked:false,keywords:[],URLs:[]},
+    currentWorkTime: {date:"",duration:0,isWorkTime:false},
     visitedDomains: []
 };
 //Data aus Storage laden oder Storage initialisieren
@@ -61,14 +69,14 @@ setInterval(function(){
     var zyklus = getZyklus(data);
     
     //Festlegen was freigeschaltet sein soll
-    if(zyklus%2==1){
+    if(zyklus%2==1 || data.status == 0){
         changes.isWorkTime = false;
         changes.isBlocked = false;
     } else{
         changes.isWorkTime = true;
         changes.isBlocked = true;
     }
-    
+
     //alert(JSON.stringify(data));
     //Events beim Wechsel zwischen Arbeit und Freizeit
     if(zyklus%2==1 && data.isWorkTime==true){
@@ -83,11 +91,12 @@ setInterval(function(){
     
     updateData(changes);
     //Website Statistik fortsetzen
-    
+    logWorkTime();
     //URL des aktiven Tabs für den nächsten Zyklus bereitstellen
     chrome.tabs.query({'active': true, 'lastFocusedWindow': true}, function (tabs) {
         data.pageURL = tabs[0].url;
         logPage(data,tabs[0].url);
+        
     });
     
     
@@ -100,18 +109,19 @@ function logPage(data,url){
     var store = transaction.objectStore("BrowserHistory");
     var domain = extractDomain(url);
     var dateTime = Date.now();
-    if(domain != data.page.domain){
+    if(domain != data.page.domain || data.page.isBlocked != data.isBlocked){
         //Domainwechsel: Letzten Seitenaufenthalt in DB speichern
         if(data.page.date != ""){
             store.add(data.page);
         }
         var page = {
-           date:dateTime,
-           URL:url,
-           URLs:[url],
-           domain:domain,
-           keywords:[],
-           duration:0
+            date:dateTime,
+            URL:url,
+            URLs:[url],
+            domain:domain,
+            isBlocked: data.isBlocked,
+            keywords:[],
+            duration:0
         }
         data.page = page;
     } else{
@@ -123,18 +133,38 @@ function logPage(data,url){
         data.page.duration++;
     }
 }
-function loadBrowserHistory(){
+function logWorkTime(){
+    var transaction = db.transaction("WorkTimeHistory", "readwrite");
+    var store = transaction.objectStore("WorkTimeHistory");
+    var dateTime = Date.now();
+    if(data.currentWorkTime.isWorkTime != data.isWorkTime){
+        if(data.currentWorkTime.date != ""){
+            store.add(data.currentWorkTime);
+        }
+        var currentWorkTime = {
+            date:dateTime,
+            duration:0,
+            isWorkTime:data.isWorkTime
+        };
+        data.currentWorkTime = currentWorkTime;
+    } else{
+        data.currentWorkTime.duration++;
+    }
+}
+function loadBrowserHistory(lowerBoundKeyRange,callback){
     var transaction = db.transaction("BrowserHistory", "readwrite");
     var store = transaction.objectStore("BrowserHistory");
-    store.openCursor().onsuccess = function(event) {
-      var cursor = event.target.result;
-      if (cursor) {
-        alert("<p>"+cursor.key+" "+JSON.stringify(cursor.value)+"</p>");
-        cursor.continue();
-      }
-      else {
-          //Fertig
-      }
+    var records = [];
+    store.openCursor(lowerBoundKeyRange).onsuccess = function(event) {
+        var cursor = event.target.result;
+        if (cursor) {
+            records.push(cursor.value);
+            cursor.continue();
+        } else{
+            if(typeof callback === "function"){
+                callback(records);
+            }
+        }
     };
 }
 function extractDomain(url){
