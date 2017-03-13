@@ -123,20 +123,6 @@ function logPage(data,url){
         data.page.duration++;
     }
 }
-function loadBrowserHistory(){
-    var transaction = db.transaction("BrowserHistory", "readwrite");
-    var store = transaction.objectStore("BrowserHistory");
-    store.openCursor().onsuccess = function(event) {
-      var cursor = event.target.result;
-      if (cursor) {
-        alert("<p>"+cursor.key+" "+JSON.stringify(cursor.value)+"</p>");
-        cursor.continue();
-      }
-      else {
-          //Fertig
-      }
-    };
-}
 function extractDomain(url){
     var domain;
     if (url.indexOf("://") > -1) {
@@ -233,5 +219,21 @@ function playSound(url){
     var myAudio = new Audio();
     myAudio.src = url;
     myAudio.play()
+}
+function loadBrowserHistory(lowerBoundKeyRange, callback){
+    var transaction = db.transaction("BrowserHistory", "readwrite");
+    var store = transaction.objectStore("BrowserHistory");
+    var records = [];
+    store.openCursor(lowerBoundKeyRange).onsuccess = function(event) {
+        var cursor = event.target.result;
+        if (cursor) {
+            records.push(cursor.value);
+            cursor.continue();
+        } else{
+            if(typeof callback === "function"){
+                callback(records);
+            }
+        }
+    };
 }
 
